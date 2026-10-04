@@ -6,6 +6,7 @@ public import RequestProject.Sec2_CoreCalculus.Notation
 public import RequestProject.Sec2_CoreCalculus.Typing
 public import RequestProject.Sec2_CoreCalculus.Renaming
 public import RequestProject.Sec2_CoreCalculus.Derived
+public import RequestProject.Sec2_CoreCalculus.Derivation
 
 /-!
 # Section 2: Core calculus (GrCore)
@@ -20,4 +21,7 @@ Reading order:
    typing rules `Γ ⊢ t : A` (VAR, ABS, APP, DER, WEAK, APPROX, PR, UNIT, PROD, LET).
 5. `Sec2_CoreCalculus/Renaming.lean` — renaming (exchange, weakening by unused variables).
 6. `Sec2_CoreCalculus/Derived.lean` — small derived rules used to build derivations.
+7. `Sec2_CoreCalculus/Derivation.lean` — typing derivations as data (`Derivation`), with
+   `Typed hs Γ t A ↔ Nonempty (Derivation hs Γ t A)`; used to define translations by
+   induction on derivations.
 -/

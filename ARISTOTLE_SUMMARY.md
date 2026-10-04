@@ -1,3 +1,34 @@
+# Summary of changes for run df905e8a-6a5c-4957-83eb-624927ef1bdd
+The GrCore → IMELL translation of Theorem 1 is now a function, `trDeriv`, and its correctness is proved. The full project builds with no errors, warnings or `sorry`, and the new theorems use only the standard axioms (`propext`, `Classical.choice`, `Quot.sound`).
+
+**Design choice: the translation takes a typing derivation, not a bare term.** GrCore terms carry no type annotations. The IMELL term depends on grades that only the derivation records, such as the grade of a promotion `[t]` or of an unboxing pattern. So no function of the bare term would work. The paper also calls this a "type-directed translation". The typing judgement is a proposition, so I added derivations as data:
+- **`RequestProject/Sec2_CoreCalculus/Derivation.lean`:** `Derivation hs Γ t A` has the same rules as `Typed`, as data. `typed_iff_nonempty_derivation` shows a judgement is derivable exactly when it has a derivation.
+
+**The translation (`RequestProject/Sec4_Solution/Theorem1/Explicit/`)**
+- **`Combinators.lean`** builds explicit IMELL terms for the rules the earlier proof only showed were derivable, each with a typing lemma:
+  - `cutAt`: substitution as a β-redex.
+  - `adjustAt` / `adjustAll`: change the assumption at one position or at every position (dereliction, adding or removing an `I`, discarding a `!A`, `I` to `!A`).
+  - `splitTm r s`: the colax maps \(⟦\square_{r+s}A⟧ ⊸ ⟦\square_r A⟧ ⊗ ⟦\square_s A⟧\).
+  - `shareL`: combines two premises that share graded variables by splitting each shared variable with `splitTm`.
+  - `promoteTm`: Benton et al.'s `promote` for a context of `!`-assumptions.
+- **`Pattern.lean`:** `patElim` eliminates a pattern. Product patterns become `let _ be x ⊗ y in _`; a unit pattern becomes `let _ be * in _` or `discard` (when its assumption has type `!I`). `patElim_typed` proves it correct.
+- **`Translation.lean`:** `trDeriv` is defined by recursion on derivations and is computable.
+  - Variables and λ map to themselves.
+  - Application, pair and `let` use `shareL`.
+  - DER is the identity.
+  - WEAK consumes the new `[A]_0` variables.
+  - APPROX uses `discard` (from 0 to ω) or `derelict` (from 1 to ω).
+  - PR at grade 0 builds `*`, at grade 1 is the identity, and at grade ω uses `promote`.
+  - `trDeriv_typed` proves \(⟦Γ⟧ ⊢ \mathsf{trDeriv}\ d : ⟦A⟧\) for every derivation `d`. It uses the corrected type translation (\(\square_0 A ↦ I\)).
+  - The file ends with one checked example: the derivation of `λx. x` translates to `λx. x`. That is the only computed example; the others would have needed derivations that are awkward to build by hand.
+
+**Theorem 1 (`Theorem1/Theorem1.lean`)**
+- `theorem1_explicit` states both directions with explicit term translations: `trDeriv` for GrCore → IMELL and the existing `trTerm` for IMELL → GrCore.
+- `theorem1_grcore_to_imell_explicit` gives the paper's form ("there exists a term M"), with `trDeriv` supplying the term.
+- The earlier `theorem1` and its proofs are unchanged.
+
+I updated the section index files and added four entries to the Properties table: `Derivation`, `trDeriv`, and the two proved properties `trDeriv_typed` and `theorem1_explicit`. I did not check whether the older Theorem 1 entries still say the translation is not written out; their notes may need a small update. All work is committed.
+
 # Summary of changes for run 1949e5e4-3906-47de-adb0-73f7c3946b33
 I added Granule's data types (ADTs and GADTs) and its constraint-based pattern checking to the Section 5 folder. The full project builds with no errors, warnings or `sorry`, and the new theorems use only the standard axioms. Two simplifications: a decision procedure that tries every grade assignment stands in for the SMT solver, and constraints are generated for patterns only.
 
