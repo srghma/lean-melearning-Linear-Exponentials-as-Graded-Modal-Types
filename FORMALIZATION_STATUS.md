@@ -14,8 +14,10 @@
 Each index file lists the files of its section in reading order. `RequestProject.lean`
 imports all six sections.
 
-Sections 2 to 6 import only earlier sections, so they can be read in numerical order. Section 1
-is the one exception. Like the paper's introduction, it states results that are only made
+Sections 2 to 6 import only earlier sections, so they can be read in numerical order, with two
+exceptions. The Section 3 comparison files (Linear Haskell, QTT, Idris 2, `Λ^p`) use the
+`{0, 1, ω}` semiring, IMELL, the model and Theorem 1 from Section 4. Section 1 is the other
+exception. Like the paper's introduction, it states results that are only made
 precise later: its terms are GrCore terms (Section 2), `⊢ push_□` is the derivation of
 Section 3, and LL is IMELL (Section 4). Skim it first for the statements, and come back to it
 after Section 4 for the proofs.
@@ -24,7 +26,28 @@ after Section 4 for the proofs.
 
 * Section 1: `gr_pull`, `gr_push`, `ll_pull`, `ll_push_not_derivable`.
 * Section 2: syntax (de Bruijn, `Term n`), `[grcore| … ]` notation, all typing rules, renaming.
-* Section 3: `grcore_push` (push is derivable at every grade).
+* Section 3: `grcore_push` (push is derivable at every grade), and the comparisons with other
+  systems:
+  * **Linear Haskell** (`LinearHaskell.lean`): `Box r a` is `□_r a` with `'One = 1`,
+    `'Many = ω`. `linearHaskell_push` shows `push` type-checks at both multiplicities;
+    `linearHaskell_unrestricted_not_bang` shows that the type of `push` at `Unrestricted` is
+    derivable while its translation `!(α ⊗ β) ⊸ !α ⊗ !β` is not derivable in IMELL.
+  * **QTT** (`QTT.lean`): a variant of the calculus, `QTTTyped = Typed qttHsup`, in which
+    `[PPROD]` never applies (`qttHsup` is always undefined). The simplified QTT rule and QTT's
+    graded-pair rule are rules of the variant (`QTTTyped.letPair`, `QTTTyped.letGradedPair`).
+    No product pattern can be typed under a box (`qtt_no_pair_under_box`). Results:
+    `qtt_push_ill_typed` (over any semiring the term `push` has no type), `qttTyped_to_grcore`
+    and `qttTyped_to_adjTyped` (QTT is a fragment of both calculi),
+    `qtt_push_many_not_derivable` (over `{0, 1, ω}`, no closed term has the type of `push` at
+    `ω`) and `qtt_conservative_over_imell` (every QTT judgement translates into IMELL).
+  * **Idris 2** (`Idris2.lean`): `Unrestricted a` is `□_ω a`. `idris2_push`,
+    `idris2_unrestricted_not_bang`, and `idris2_vs_qtt` (Idris 2 accepts `push`, QTT does not).
+  * **Abel & Bernardy's `Λ^p`** (`LambdaP.lean`): a separate calculus `LamP.LTyped` with
+    grade-vector contexts and the graded eliminator `let (x, y) =^q t in u`. Results:
+    `lamP_push` (push at every grade, over every semiring), `LamP.LTyped.letPair_one` (the
+    `q = 1` instance is the QTT rule), `grcore_lamP_letPair` (the `Λ^p` rule is derivable in
+    GrCore as `let [(x, y)] = [t] in u`), and `lamP_vs_qtt` (over `{0, 1, ω}`, `Λ^p` derives
+    push at `ω`, while QTT and IMELL do not).
 * Section 4:
   * the `hsup` extension (`HSup`, `AdjTyped`);
   * **new:** `adjTyped_lub_iff_grcore`: taking `hsup` to be the partial least upper bound
@@ -40,11 +63,12 @@ after Section 4 for the proofs.
 
 ## What is still missing (not formalized)
 
-1. **Section 3, the other languages.** Linear Haskell, Idris 2, QTT and Abel & Bernardy's
-   `Λ^p` are only discussed informally in the paper. The two rules the paper shows (the
-   simplified QTT tensor elimination and the `Λ^p` graded `let`) could be added as variants of
-   the calculus. Then one could prove "QTT does not admit push" and "`Λ^p` admits push". These
-   claims are not stated precisely in the paper.
+1. **Section 3, scope of the comparisons.** Linear Haskell and Idris 2 are modelled only
+   through their `Box`/`Unrestricted` data types and nested pattern matching, i.e. as GrCore
+   over `{0, 1, ω}`. Type dependency in QTT, and graded function types `q A → B` in `Λ^p`, are
+   not modelled (only linear functions are). The remark that `Λ^p`'s models include the one
+   showing every linear term is a permutation is not formalized. There is no full translation
+   of `Λ^p` into GrCore; only its product rule is shown to be derivable.
 2. **Section 4, the coeffect remark.** The colax-monoidality reading
    `n_{r,s,A,B} : D_{r ⋉ s}(A ⊗ B) → D_r A ⊗ D_s B` (Petricek et al.) needs a categorical
    semantics, which is not formalized.

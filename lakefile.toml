@@ -8,4 +8,4 @@ rev = "v4.28.0"
 
 [[lean_lib]]
 name = "RequestProject"
-globs = ["RequestProject", "RequestProject.+"]
+globs = ["RequestProject", "RequestProject.*"]

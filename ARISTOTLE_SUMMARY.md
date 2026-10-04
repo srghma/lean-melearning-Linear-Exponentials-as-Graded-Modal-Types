@@ -1,3 +1,43 @@
+# Summary of changes for run 9481bb5d-a41e-46c9-a35e-0573342937d7
+I formalized Section 3's comparisons with Linear Haskell, Idris 2, QTT and Λ^p. QTT is now a variant of GrCore, and Λ^p is a new calculus with its own terms and typing rules. The full project builds with no errors, no warnings and no `sorry`, and the new theorems use only the standard axioms.
+
+There are four new files in `RequestProject/Sec3_DissectingTheProblem/`, and the section's index file and `FORMALIZATION_STATUS.md` are updated to match.
+
+**QTT (`QTT.lean`)**
+- **The variant:** `QTTTyped` is GrCore with the `[PPROD]` rule switched off, so a pair can never be taken apart underneath a box. Everything else, including pattern matching on unboxed pairs, is unchanged. The paper's simplified QTT tensor rule and QTT's graded-pair rule \((x^\pi : S) \otimes T\) (read as \(\square_\pi S \otimes T\)) both hold in it (`QTTTyped.letPair`, `QTTTyped.letGradedPair`).
+- **No pairs under a box:** `qtt_no_pair_under_box` shows a product pattern cannot be typed underneath a box.
+- **`push` is ill-typed:** `qtt_push_ill_typed` shows that, over any semiring, the term `push` has no type at all.
+- **QTT is a fragment of the earlier calculi:** every QTT derivation is also a derivation in GrCore and in the adjusted calculus, for any `hsup` (`qttTyped_to_grcore`, `qttTyped_to_adjTyped`).
+- **No term of the `push` type:** `qtt_push_many_not_derivable` shows that, over \(\{0,1,\omega\}\), no closed term has type \(\square_\omega(\alpha\otimes\beta) \multimap \square_\omega\alpha\otimes\square_\omega\beta\).
+- **Conservative over linear logic:** `qtt_conservative_over_imell` shows every QTT judgement translates, using Theorem 1, into a derivable IMELL judgement.
+
+**Linear Haskell (`LinearHaskell.lean`)**
+- `Box r a` is modelled as \(\square_r a\), with `'One` = 1 and `'Many` = ω.
+- `linearHaskell_push`: `push` type-checks at both multiplicities.
+- `linearHaskell_unrestricted_not_bang`: at `Unrestricted`, `push` type-checks, but the translated type \(!(\alpha\otimes\beta) \multimap\, !\alpha \otimes !\beta\) cannot be derived in linear logic. So `Unrestricted a` is not `!a`.
+
+**Idris 2 (`Idris2.lean`)**
+- `Unrestricted a` is modelled as \(\square_\omega a\).
+- `idris2_push` and `idris2_unrestricted_not_bang` are the analogues of the Linear Haskell results.
+- `idris2_vs_qtt`: Idris 2 accepts `push`, while QTT, which Idris 2 is based on, does not.
+
+**Λ^p (`LambdaP.lean`)**
+- **The calculus:** `LamP.LTerm R n` uses de Bruijn indices, so `LTerm R 0` is the closed terms. Eliminators carry a grade, as in `let (x, y) =^q t in u`. The typing judgement `LamP.LTyped` uses grade-vector contexts, and its product rule gives \((q\gamma+\delta)\Gamma\) in the conclusion.
+- **`push`:** `lamP_push` shows Λ^p admits `push` at every grade, over every semiring.
+- **Relation to QTT:** `LTyped.letPair_one` shows the q = 1 case of the Λ^p rule is the simplified QTT rule.
+- **Relation to GrCore:** `grcore_lamP_letPair` shows the Λ^p rule can be derived in GrCore as `let [(x, y)] = [t] in u`. This makes precise the paper's remark that it is "akin to the elimination behaviour underneath a graded modality in GrCore".
+- **Comparison:** `lamP_vs_qtt` shows that over \(\{0,1,\omega\}\), Λ^p derives `push` at ω, while QTT and IMELL do not.
+
+**Limits of what is modelled**
+- Linear Haskell and Idris 2 are covered only through their `Box`/`Unrestricted` data types and nested pattern matching.
+- QTT's type dependency is not modelled.
+- Λ^p includes only linear functions, not graded functions \(q\,A \to B\).
+- There is no full translation of Λ^p into GrCore; only its product rule is shown to be derivable.
+- The paper's remark about Λ^p's models (that they include the one showing every linear term is a permutation) is not formalized.
+- **Section order:** the four new files use the \(\{0,1,\omega\}\) semiring, IMELL, the counting model and Theorem 1 from Section 4. This is a forward reference, like the one Section 1 already makes, and is noted in the section's index file.
+
+The Properties table has two new definitions (the QTT variant and the Λ^p calculus) and eight new properties, all proved.
+
 # Summary of changes for run da1f2aab-d633-44a4-bad9-e1904ee00d28
 I reorganised the Lean files by paper section, fixed the Typst source, added one result from Section 4 that hadn't been formalized, and listed what is still missing. The project builds with no `sorry`, and the new theorem uses only the standard axioms.
 
