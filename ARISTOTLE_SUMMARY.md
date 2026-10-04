@@ -1,3 +1,34 @@
+# Summary of changes for run c05d06d2-08c8-471e-89c4-cb4892c9a284
+I added a semantics for GrCore: every typing derivation is now interpreted as a morphism in a categorical model. It works for any pre-ordered semiring and any partial `⋉`, so it covers both Section 2's GrCore and the adjusted calculus of Section 4. The full project builds with no errors, warnings or `sorry`, and the new theorems use only the standard axioms. The paper has no such semantics; this is new material.
+
+There are four new files in `RequestProject/Sec4_Solution/Semantics/`:
+
+- **`CatModel.lean` – what a model is.** `CatModel R hs C` reuses the structures from the earlier coeffect work:
+  - a symmetric monoidal closed category, where \(⊸\) is the internal hom;
+  - a graded exponential comonad for \(\square_r\);
+  - the partial colax maps \(D_{r⋉s}(A⊗B) \to D_rA ⊗ D_sB\) for `[PPROD]`;
+  - a map \(D_r I \to I\), needed for the unit pattern under a box;
+  - objects for the atoms.
+
+  The file interprets types, assumptions and contexts as objects. It also builds the maps for the context operations: context addition (contraction on shared graded variables), weakening, dereliction, approximation, promotion, and joining a pattern's bindings onto the context.
+- **`Interp.lean` – interpreting derivations.**
+  - `Typed` is a proposition, so a function can't take its proofs apart. I added `Deriv`, a data-valued copy with exactly the same rules, and proved `typed_iff_nonempty_deriv`.
+  - `CatModel.interp` sends each derivation \(Γ ⊢ t : A\) to a morphism \(⟦Γ⟧ \to ⟦A⟧\), by recursion on the derivation.
+  - `CatModel.sound`: if a judgement is derivable, every model has a morphism \(⟦Γ⟧ \to ⟦A⟧\). As a corollary, `not_typed_of_isEmpty`: if some model has no global element of \(⟦A⟧\), no closed term has type \(A\).
+- **`CountingModel.lean` – the old counting model is an instance.**
+  - `countingModel ν` turns the existing \(\{0,1,ω\}\) counting model into a model of the adjusted calculus: there is a morphism \(x \to y\) iff \(y ≤ x\), the internal hom is the existing implication, and the colax map exists only for \(1⋉1\).
+  - `countingModel_hom_iff`: its interpretation agrees with the original one. So the earlier soundness theorem follows from the general one (`grModel_sound_from_catModel`).
+  - `adj_push_many_not_derivable_sem` re-proves that `push` at \(ω\) has no derivation, this time through the general semantics.
+- **`ErasureModel.lean` – a model for every `⋉`.** `erasureModel` uses ordinary types and functions, with \(D_r A = A\). As an application, `no_closed_term_of_atom` shows that no closed term has an atomic type, in GrCore and in every variant.
+
+**What is still not covered:**
+- **No equations:** there is no reduction relation, substitution lemma or cut elimination, and no proof that the models respect them.
+- **Coherence:** it isn't shown that different derivations of the same judgement get the same morphism. That would need more coherence laws than the structures currently require.
+- **Completeness** is not addressed.
+- **Models of GrCore itself:** the only model given for Section 2's GrCore (not the adjusted calculus) is the erasure model, which ignores grades.
+
+I updated the index file `RequestProject/Sec4_Solution.lean` and `FORMALIZATION_STATUS.md` to match. The Properties table has two new definitions (the model structure and the interpretation of derivations) and three new proved properties (general soundness, the counting model as an instance, and no closed term of atomic type).
+
 # Summary of changes for run d123beee-4927-4b71-b46f-bb8753217e57
 I formalized the coeffect remark at the end of Section 4: the paper's `⋉` is modelled by colax monoidality of a graded comonad, \(n_{r,s,A,B} : D_{r⋉s}(A⊗B) \to D_r A ⊗ D_s B\). I also built a concrete model showing that, there, the restriction to \(1 ⋉ 1 = 1\) in equation (1) cannot be relaxed to allow \(ω ⋉ ω\). The whole project builds with no errors, warnings or `sorry`, and the new theorems use only the standard axioms. One limit: this gives a categorical semantics for the graded modality and `⋉`, but there is no theorem interpreting every typing derivation in it, so it isn't a semantics for the full typing judgement.
 

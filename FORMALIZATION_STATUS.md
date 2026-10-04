@@ -71,6 +71,26 @@ after Section 4 for the proofs.
     for any `⋉` with `ω ⋉ ω` defined (`res_no_colax_of_many_defined`,
     `res_not_grcore_colax`, `res_colax_exactly_eq1`); so the adjusted `[PPROD]` has strictly
     more models than GrCore's (`adjusted_colax_strictly_more_models`).
+* **Semantics (not in the paper)** (`Sec4_Solution/Semantics/`): a categorical semantics of the
+  typing judgement `Typed hs`, for every pre-ordered semiring and every partial `⋉` (so both for
+  Section 2's GrCore and for the adjusted calculus).
+  * A model `CatModel R hs C` is a symmetric monoidal closed category `C` with a graded
+    exponential comonad (`GradedExponential`), a colax structure `HSupColax hs` for `[PPROD]`,
+    maps `D_r I ⟶ I` (the unit pattern under a box) and objects for the atoms.
+  * Types, assumptions and contexts are interpreted as objects (`tyObj`, `entryObj`, `ctxObj`).
+  * `Deriv hs Γ t A` is the type of derivations (same rules as `Typed`, valued in `Type`);
+    `typed_iff_nonempty_deriv`. Every derivation denotes a morphism
+    `CatModel.interp d : ⟦Γ⟧ ⟶ ⟦A⟧` (and every pattern derivation `?r⟦A⟧ ⟶ ⟦Δ⟧`).
+  * Soundness: `CatModel.sound` (derivable ⇒ a morphism `⟦Γ⟧ ⟶ ⟦A⟧` exists in every model),
+    and `CatModel.not_typed_of_isEmpty` (no global element of `⟦A⟧` in some model ⇒ no closed
+    term of type `A`).
+  * Instances: the resource-counting model (`countingModel`, a thin model of the adjusted
+    calculus over `{0, 1, ω}`): its interpretation agrees with `GrModel`
+    (`countingModel_hom_iff`), so `GrModel.sound` is a special case
+    (`grModel_sound_from_catModel`) and `adj_push_many_not_derivable` gets a second proof
+    (`adj_push_many_not_derivable_sem`). The erasure model in `Type` (`erasureModel`, `D_r A = A`)
+    is a model for every `hs`; it shows no closed term has an atomic type
+    (`no_closed_term_of_atom`).
 * Section 5: `granule_push_many_ill_typed`, `granule_push_many_typed_before`,
   `lnl_hsup_self_defined_iff`.
 * Section 6: `both_push_and_bang`.
@@ -84,18 +104,16 @@ after Section 4 for the proofs.
    showing every linear term is a permutation is not formalized. There is no full translation
    of `Λ^p` into GrCore; only its product rule is shown to be derivable.
 2. **Section 4, the coeffect remark: scope.** The remark is formalized in
-   `Sec4_Solution/Coeffect/` (see above). Not covered: a full categorical semantics of the
-   GrCore typing judgement (a soundness theorem interpreting every derivation as a morphism);
-   only the `[PPROD]` / `push` part is interpreted. `GradedComonad`, `GradedExponential` and
+   `Sec4_Solution/Coeffect/` (see above). `GradedComonad`, `GradedExponential` and
    `HSupColax` impose the graded comonad laws, naturality, and the colax counit, symmetry and
    associativity laws, but not every coherence law between the different pieces of structure
    (e.g. between approximation and comultiplication, or between contraction and the colax map).
-3. **Section 4, a semantics for GrCore in general.** The model used for derivations is a
-   resource-counting model for `{0, 1, ω}`, and it serves only to prove underivability. The
-   categorical model of `Sec4_Solution/Coeffect/` interprets the graded modality and `⋉`, but
-   is not connected to typing derivations by a soundness theorem. There is no
-   denotational or operational semantics, and no cut elimination or substitution lemma for
-   GrCore, but the paper does not claim any of these.
+3. **Semantics of GrCore: what is still missing.** A categorical semantics of derivations now
+   exists (`Sec4_Solution/Semantics/`, see above). Not covered: an equational theory or
+   operational semantics (β/η reduction, substitution lemma, cut elimination) and its soundness
+   in the models; coherence (that different derivations of the same judgement have the same
+   denotation; this would need the full set of coherence laws of item 2); completeness. The
+   paper does not claim any of these.
 4. **Section 5, the Granule specifics.** User-defined ADTs/GADTs, `hsup` applied to arbitrary
    constructors, and discharging the constraints with an SMT solver are not modelled. Only the
    `r ⊔ r` restriction for `LNL` and the `push` example are formalized.

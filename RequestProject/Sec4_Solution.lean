@@ -21,6 +21,10 @@ public import RequestProject.Sec4_Solution.Theorem1.AsStated
 public import RequestProject.Sec4_Solution.Theorem1.Theorem1
 public import RequestProject.Sec4_Solution.Coeffect.GradedComonad
 public import RequestProject.Sec4_Solution.Coeffect.ResourceModel
+public import RequestProject.Sec4_Solution.Semantics.CatModel
+public import RequestProject.Sec4_Solution.Semantics.Interp
+public import RequestProject.Sec4_Solution.Semantics.CountingModel
+public import RequestProject.Sec4_Solution.Semantics.ErasureModel
 
 /-!
 # Section 4: Solution
@@ -34,7 +38,8 @@ Reading order:
    order (exact usage) this is `diagHsup` (`isPartialLub_diagHsup`).
 3. `Sec4_Solution/NoneOneTons.lean` — the semiring `{0, 1, ω}` and equation (1).
 4. `Sec4_Solution/Model/` — `Value`, `GrCoreModel`: a resource-counting model, used only as
-   a proof tool for underivability results.
+   a proof tool for underivability results (item 9 shows it is an instance of the categorical
+   semantics).
 5. `Sec4_Solution/PushNotDerivable.lean` — `!(A ⊗ B) ⊸ !A ⊗ !B` is no longer derivable
    (`adj_push_many_not_derivable`), while `push` at grade `1` still is (`adj_push_one`).
 6. `Sec4_Solution/IMELL/` — IMELL with the term assignment of Benton et al.:
@@ -49,4 +54,13 @@ Reading order:
    `ResourceModel` builds a model over `{0, 1, ω}` that has the colax map for equation (1) but
    none for any `⋉` with `ω ⋉ ω` defined (`res_colax_exactly_eq1`), so the adjusted `[PPROD]`
    has strictly more models than GrCore's (`adjusted_colax_strictly_more_models`).
+9. `Sec4_Solution/Semantics/` — a categorical semantics of the typing judgement `Typed hs`
+   (not in the paper), for every pre-ordered semiring and every `⋉`, so for GrCore and for the
+   adjusted calculus. `CatModel` defines models (symmetric monoidal closed category, graded
+   exponential comonad, colax structure for `⋉`) and interprets types and contexts;
+   `Interp` interprets every derivation as a morphism `⟦Γ⟧ ⟶ ⟦A⟧` (`CatModel.interp`,
+   soundness `CatModel.sound`); `CountingModel` shows the resource-counting model of item 4 is
+   an instance (`grModel_sound_from_catModel`, `adj_push_many_not_derivable_sem`);
+   `ErasureModel` is the set-theoretic model with `D_r A = A`, valid for every `⋉`
+   (`no_closed_term_of_atom`).
 -/
