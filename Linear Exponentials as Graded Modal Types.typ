@@ -19,6 +19,7 @@
 }
 
 #let codeblock(label: none, body) = block(
+  breakable: false,
   width: 100%,
   stroke: 0.5pt + luma(180),
   fill: luma(250),
@@ -253,9 +254,9 @@ rules:
     prooftree(rule(name: [WEAK], $Gamma tack t : A$, $Gamma + [Delta]_0 tack t : A$)),
     prooftree(rule(
       name: [APPROX],
-      $Gamma, x : [A]_r, Gamma' tack t : A$,
+      $Gamma, x : [A]_r, Gamma' tack t : B$,
       $r subset.eq.sq s$,
-      $Gamma, x : [A]_s, Gamma' tack t : A$,
+      $Gamma, x : [A]_s, Gamma' tack t : B$,
     )),
 
     prooftree(rule(name: [PR], $[Gamma] tack t : A$, $r * [Gamma] tack [t] : square_r A$)),
@@ -458,9 +459,9 @@ equivalent to intuitionistic linear logic \[WA21\].
       rule(
         $
           0 Gamma_1, z^0 : (x^pi : S) ⊗ T tack U quad Gamma_1 tack M^sigma : (x^pi : S) ⊗ T \
-          Gamma_2, x^(sigma pi) : S, y^sigma : T tack N^sigma : U[(x, y)/z] quad 0 Gamma_1 = 0 Gamma_2
+          Gamma_2, x^(sigma pi) : S, y^sigma : T tack N^sigma : U[(x, y) \/ z] quad 0 Gamma_1 = 0 Gamma_2
         $,
-        $ Gamma_1 + Gamma_2 tack "let"_(x^pi : S . T) (x, y) = M "in" N^sigma : U[M/z] $,
+        $ Gamma_1 + Gamma_2 tack "let"_(x^pi : S . T) (x, y) = M "in" N^sigma : U[M \/ z] $,
       ),
     ),
     prooftree(
@@ -538,7 +539,7 @@ non-linear use: variables graded with 1 must be used linearly, with 0
 must be discarded, and a grade of $omega$ permits unconstrained use à
 la linear logic’s $!$. We then define $r times.l s$ for this semiring as:
 
-#math.equation(numbering: "(1)")[
+#math.equation(block: true, numbering: "(1)")[
   $
     r times.l s = cases(
       1 & quad r = 1 and s = 1,
@@ -551,7 +552,7 @@ i.e., if either of the grades is not 1, then $times.l$ is undefined and we canno
 apply the \[PPROD\] pattern typing rule, thus disallowing $!(A ⊗ B) -> !A ⊗ !B$ and recovering the strength of $!$
 for intuitionistic multiplicative exponential linear logic (IMELL):
 
-#strong[Theorem 1] (Equivalent expressivity) #strong[.] #emph[The
+#strong[Theorem 1] (Equivalent expressivity)#strong[.] #emph[The
   adjusted] GRCORE #emph[calculus, for the none-one-tons semiring with] $!A = square_omega A$, #emph[has the same expressive power as IMELL.]
 
 #emph[The equivalence in expressivity follows by a translation. In the
@@ -573,7 +574,7 @@ GRCORE (since $1 + 0 = 1$), but $alpha ⊸ alpha ⊗ !alpha$ is not provable in 
 The operation $times.l$ is inspired by the coeffect calculus of Petricek et
 al.~\[POM14\] whose graded type system includes $times.l$ as an operation to
 control splitting of resources to subterms, modelled by colax
-monoidality of a graded comonad $times.l_(r, s, A, B) : cal(D)_(r times.l s)(A ⊗ B) -> (cal(D)_r A ⊗ cal(D)_s B)$.
+monoidality of a graded comonad $n_(r, s, A, B) : cal(D)_(r times.l s)(A ⊗ B) -> (cal(D)_r A ⊗ cal(D)_s B)$.
 
 == #strong[5 Implementation in Granule]
 <implementation-in-granule>

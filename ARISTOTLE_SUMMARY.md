@@ -1,3 +1,36 @@
+# Summary of changes for run da1f2aab-d633-44a4-bad9-e1904ee00d28
+I reorganised the Lean files by paper section, fixed the Typst source, added one result from Section 4 that hadn't been formalized, and listed what is still missing. The project builds with no `sorry`, and the new theorem uses only the standard axioms.
+
+**1. Folder layout (one folder per section)**
+The folders are now `RequestProject/Sec1_Introduction/`, `Sec2_CoreCalculus/`, `Sec3_DissectingTheProblem/`, `Sec4_Solution/`, `Sec5_ImplementationInGranule/` and `Sec6_Conclusions/`. The number prefix gives the reading order.
+- Each folder has an index file next to it (for example `RequestProject/Sec4_Solution.lean`) that imports that section's files in reading order and describes each one.
+- A new root file, `RequestProject.lean`, imports all six sections. I added it to the `globs` in `lakefile.toml` so the default build compiles it.
+- Sections 2–6 only import earlier sections. Section 1 is the one exception: like the paper's introduction, it states results that are defined later (GrCore in Section 2, `push` in Section 3, IMELL in Section 4). Read it first for the statements, then again after Section 4 for the proofs.
+
+**2. Is the `.typ` file correct?**
+It now compiles with Typst 0.15 with no warnings. The two fixes from the earlier run (Theorem 1's translation and equation (1)) are still correct. Comparing it page by page against the original PDF turned up more problems, which I fixed:
+- **Equation (1)** was rendered inline, in small type, with no "(1)". It is now a numbered display equation.
+- **QTT rule:** `U[(x,y)/z]` and `U[M/z]` were typeset as fractions. The slash is now escaped.
+- **(APPROX):** the term's type was written `A`, the same letter as the type of `x`, which forces the two to be equal. The original paper has the same slip. I changed it to `B`, which matches the Lean rule.
+- **Code blocks** could split across pages, leaving the label ("Granule", "Idris 2") alone on the next page. They now stay on one page.
+- **Two small changes:** the colax map's name is `n_{r,s,A,B}` again, as in the original, and I removed a stray space in "Theorem 1 (…) .".
+
+**3. New result**
+Section 4 says that taking `hsup` to be the partial least upper bound "recovers the existing pattern matching typing". Previously only the exact-usage (discrete) case was covered. It is now proved in general in `RequestProject/Sec4_Solution/HsupLub.lean`:
+- `adjTyped_lub_iff_grcore`: if `hsup` is the partial least upper bound of a partially ordered semiring, the adjusted calculus derives exactly the same judgements as Section 2's GrCore. It needs a partial order, not just a preorder, so that the least upper bound of `r` and `r` is `r` itself.
+- `isPartialLub_diagHsup`: for an exact-usage (discrete) order, `hsup` is defined only when `r = s`.
+
+**4. What is still missing**
+Full details are in `FORMALIZATION_STATUS.md`.
+- **Section 3:** the comparisons with Linear Haskell, Idris 2, QTT and Λ^p. The paper states these only informally; the QTT and Λ^p rules could be added as variants of the calculus.
+- **Section 4:** the coeffect / colax-monoidality remark, which would need a categorical semantics.
+- **Semantics for GrCore:** there is none in general (the paper doesn't claim one). The only model is the resource-counting one used to prove that some types have no derivation.
+- **Section 5:** Granule's data types (ADTs/GADTs) and its SMT-based constraint solving are not modelled.
+- **Theorem 1:** the GrCore → IMELL direction is proved in the paper's form ("there exists a term M"), but the term translation is not written out as a function.
+- **Atomic types:** both calculi still have them added. Without them every type has a closed term, and the statements that something cannot be derived become trivial.
+
+The Properties table has the new file paths and a new proved entry for the least-upper-bound result.
+
 # Summary of changes for run a4956e45-9086-43b2-bc45-896bb2cd8d9c
 The Lean project already built with no errors and no `sorry`, so I took "fix it" to mean the errors in the paper. I fixed two of them in the project's copy of the paper source, `Linear Exponentials as Graded Modal Types.typ`. I did not touch the PDF, because no Typst compiler was available to regenerate it.
 
