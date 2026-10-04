@@ -57,6 +57,20 @@ after Section 4 for the proofs.
   * `adj_push_many_not_derivable`, `adj_push_one`;
   * Theorem 1, corrected (`theorem1`), and the refutation of the translation in the original
     paper (`theorem1_grcore_to_imell_as_stated_false`).
+  * **new (coeffect remark):** `Sec4_Solution/Coeffect/GradedComonad.lean` defines graded
+    comonads (`GradedComonad`), the extra structure used for graded contexts
+    (`GradedExponential`), and partial colax monoidality indexed by `⋉`
+    (`HSupColax hs G`: a map `n_{r,s,A,B} : D_{r⋉s}(A ⊗ B) → D_r A ⊗ D_s B` exactly when
+    `r ⋉ s` is defined). General results: `HSupColax.push` (semantic `push` from
+    `r ⋉ r = r`), `diag_colax_push` (models of GrCore's `[PPROD]` have `push` at every grade),
+    `HSupColax.restrict`, `no_colax_of_no_split`. `Sec4_Solution/Coeffect/ResourceModel.lean`
+    gives a concrete thin symmetric monoidal model over `{0, 1, ω}` (sets of resource vectors,
+    `D_ω A` = generated submonoid): it is a graded exponential comonad (`resExp`) with the
+    colax structure of equation (1) (`resColax`), but has no morphism
+    `D_t(a ⊗ b) → D_ω a ⊗ D_ω b` for any `t` (`res_no_split_many`), hence no colax structure
+    for any `⋉` with `ω ⋉ ω` defined (`res_no_colax_of_many_defined`,
+    `res_not_grcore_colax`, `res_colax_exactly_eq1`); so the adjusted `[PPROD]` has strictly
+    more models than GrCore's (`adjusted_colax_strictly_more_models`).
 * Section 5: `granule_push_many_ill_typed`, `granule_push_many_typed_before`,
   `lnl_hsup_self_defined_iff`.
 * Section 6: `both_push_and_bang`.
@@ -69,11 +83,17 @@ after Section 4 for the proofs.
    not modelled (only linear functions are). The remark that `Λ^p`'s models include the one
    showing every linear term is a permutation is not formalized. There is no full translation
    of `Λ^p` into GrCore; only its product rule is shown to be derivable.
-2. **Section 4, the coeffect remark.** The colax-monoidality reading
-   `n_{r,s,A,B} : D_{r ⋉ s}(A ⊗ B) → D_r A ⊗ D_s B` (Petricek et al.) needs a categorical
-   semantics, which is not formalized.
-3. **Section 4, a semantics for GrCore in general.** The only model is a resource-counting
-   model for `{0, 1, ω}`, and it serves only to prove underivability. There is no
+2. **Section 4, the coeffect remark: scope.** The remark is formalized in
+   `Sec4_Solution/Coeffect/` (see above). Not covered: a full categorical semantics of the
+   GrCore typing judgement (a soundness theorem interpreting every derivation as a morphism);
+   only the `[PPROD]` / `push` part is interpreted. `GradedComonad`, `GradedExponential` and
+   `HSupColax` impose the graded comonad laws, naturality, and the colax counit, symmetry and
+   associativity laws, but not every coherence law between the different pieces of structure
+   (e.g. between approximation and comultiplication, or between contraction and the colax map).
+3. **Section 4, a semantics for GrCore in general.** The model used for derivations is a
+   resource-counting model for `{0, 1, ω}`, and it serves only to prove underivability. The
+   categorical model of `Sec4_Solution/Coeffect/` interprets the graded modality and `⋉`, but
+   is not connected to typing derivations by a soundness theorem. There is no
    denotational or operational semantics, and no cut elimination or substitution lemma for
    GrCore, but the paper does not claim any of these.
 4. **Section 5, the Granule specifics.** User-defined ADTs/GADTs, `hsup` applied to arbitrary

@@ -19,6 +19,8 @@ public import RequestProject.Sec4_Solution.Theorem1.GrCoreToIMELL
 public import RequestProject.Sec4_Solution.Theorem1.IMELLToGrCore
 public import RequestProject.Sec4_Solution.Theorem1.AsStated
 public import RequestProject.Sec4_Solution.Theorem1.Theorem1
+public import RequestProject.Sec4_Solution.Coeffect.GradedComonad
+public import RequestProject.Sec4_Solution.Coeffect.ResourceModel
 
 /-!
 # Section 4: Solution
@@ -41,4 +43,10 @@ Reading order:
    IMELL `Admissible`, `Sharing`, `Promotion`; the two directions `GrCoreToIMELL` and
    `IMELLToGrCore`; `AsStated` (the translation of the original paper is refuted); and
    finally `Theorem1`.
+8. `Sec4_Solution/Coeffect/` — the coeffect remark at the end of Section 4: `⋉` is modelled by
+   colax monoidality of a graded comonad. `GradedComonad` defines graded comonads, the graded
+   exponential structure and the partial colax structure `HSupColax` indexed by `⋉`;
+   `ResourceModel` builds a model over `{0, 1, ω}` that has the colax map for equation (1) but
+   none for any `⋉` with `ω ⋉ ω` defined (`res_colax_exactly_eq1`), so the adjusted `[PPROD]`
+   has strictly more models than GrCore's (`adjusted_colax_strictly_more_models`).
 -/
