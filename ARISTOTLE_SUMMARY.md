@@ -1,3 +1,34 @@
+# Summary of changes for run 1949e5e4-3906-47de-adb0-73f7c3946b33
+I added Granule's data types (ADTs and GADTs) and its constraint-based pattern checking to the Section 5 folder. The full project builds with no errors, warnings or `sorry`, and the new theorems use only the standard axioms. Two simplifications: a decision procedure that tries every grade assignment stands in for the SMT solver, and constraints are generated for patterns only.
+
+**Data types (`RequestProject/Sec5_ImplementationInGranule/DataTypes/`)**
+- **Syntax:** types now include `data d i` (data type `d` at GADT index `i`). A signature `GSig` lists each constructor's field types at each index. A constructor that can't build a given index has no entry there; that is how GADT index refinement works here. Constructors are first-class terms, patterns gain `c p₁ ⋯ pₘ`, and there is an `m`-way `case`. Terms stay de Bruijn-indexed (`GTerm 0` is the closed terms).
+- **Typing (`GTyped`, with pattern typing `GPatTy`):** this follows the paper's description. Under a box of grade \(r\), every sub-pattern of a constructor or pair pattern is checked at \(r\). If there is at least one sub-pattern, \(r ⋉ r\) must be defined.
+- **`grcore_embeds`:** every GrCore derivation is also a derivation of the new calculus, for any `⋉` that is only defined when both grades are equal (Section 2's `⋉` and equation (1)).
+- **`lam_letPat_var_ill_typed`:** if a pattern can't be matched against \(A\), then no program `λz. let p = z in u` has type \(A ⊸ B\).
+
+**Constraint solving (`Constraints/`)**
+- `patCheck` turns a pattern and a type into either a failure or the bound variables plus a constraint on the grades.
+- `patCheck_iff`: a pattern can be typed exactly when `patCheck` succeeds and its constraint holds.
+- `patCheck_map`: generating constraints and then instantiating the grades gives the same result as instantiating first.
+- With grade variables, `patTy_some_instance_iff` and `patTy_all_instances_iff` show that the pattern types at some (or every) instantiation exactly when the constraint is satisfiable (or valid).
+- The executable checkers `checkPatSat` and `checkPatValid` come with correctness proofs. They only work when the grades and grade variables are finite, as for `LNL`.
+- `GPatTy.con_requires_hsup`, `GPatTy.pair_requires_hsup` and `GPatTy.con_nullary` state the "at least one sub-pattern" rule directly.
+
+**Examples (`Examples.lean`, `LNL` with equation (1))**
+- The paper's `push` is rejected at `[Many]`: every program of the form `push [(x, y)] = u` is ill-typed (`granule_push_many_ill_typed_dt`). It is accepted at `[1]`.
+- `[Just x]` is rejected under `Many`, but the nullary `[Nothing]` is accepted.
+- `Nil` doesn't match `Vec 1 a`. `[Cons x Nil]` is accepted at `[1]` and rejected at `[Many]`.
+- `unwrap_typed` and `maybeId_typed` show constructors and `case` working.
+- For grade-polymorphic `push`, the constraint is satisfiable but not valid.
+
+**Limits**
+- Type parameters are handled by monomorphisation: `Maybe a` for each `a` is a separate data type. There is no type-level polymorphism or index unification.
+- `case` is not checked for exhaustiveness.
+- I read "\(r ⋉ r\) defined at \(r\)" as "\(r ⋉ r\) is defined". For both of the paper's choices of `⋉`, it then equals \(r\).
+
+The Section 5 index file and `FORMALIZATION_STATUS.md` are updated. The Properties table has two new definitions and five new proved properties.
+
 # Summary of changes for run c05d06d2-08c8-471e-89c4-cb4892c9a284
 I added a semantics for GrCore: every typing derivation is now interpreted as a morphism in a categorical model. It works for any pre-ordered semiring and any partial `⋉`, so it covers both Section 2's GrCore and the adjusted calculus of Section 4. The full project builds with no errors, warnings or `sorry`, and the new theorems use only the standard axioms. The paper has no such semantics; this is new material.
 

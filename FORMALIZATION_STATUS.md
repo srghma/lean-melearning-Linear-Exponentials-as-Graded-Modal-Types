@@ -92,7 +92,35 @@ after Section 4 for the proofs.
     is a model for every `hs`; it shows no closed term has an atomic type
     (`no_closed_term_of_atom`).
 * Section 5: `granule_push_many_ill_typed`, `granule_push_many_typed_before`,
-  `lnl_hsup_self_defined_iff`.
+  `lnl_hsup_self_defined_iff`, and Granule's data types and constraint solving:
+  * **Data types** (`DataTypes/`): types gain `data d i` (data type `d` at GADT index `i`); a
+    signature `GSig` gives the field types of each constructor at each index (`none` when the
+    constructor cannot build that index, which is how GADT index refinement is modelled).
+    Constructors are first-class terms, patterns gain `c p₁ ⋯ pₘ`, and there is an `m`-way
+    `case`. Pattern typing `GPatTy` follows Section 5's description of Granule: under a box of
+    grade `r`, all sub-patterns of a constructor or pair pattern are checked at `r`, and if
+    there is at least one sub-pattern, `r ⋉ r` must be defined. GrCore embeds into the
+    extended calculus for every `⋉` defined only on the diagonal (`grcore_embeds`; covers
+    Section 2 and equation (1)). Inversion: if a pattern cannot be matched against `A`, no
+    program `λz. let p = z in u` has a type `A ⊸ B` (`lam_letPat_var_ill_typed`).
+  * **Constraints** (`Constraints/`): a constraint language `GFormula` (connectives, `=`, `⊑`,
+    "`g ⋉ g` is defined") and a constraint generator `patCheck` for patterns, generic in the
+    grades. `patCheck_iff`: pattern typing holds iff `patCheck` succeeds and its constraint
+    holds. `patCheck_map`: generation commutes with instantiating grades. With grade
+    variables (`GExp R V`), `patTy_some_instance_iff` / `patTy_all_instances_iff`: the pattern
+    can be typed at some / every instantiation iff the symbolic constraint is satisfiable /
+    valid. Over finite grades both are decidable; `checkPatSat` and `checkPatValid` are
+    executable checkers with correctness theorems (`checkPatSat_iff`, `checkPatValid_iff`).
+    General consequences: `GPatTy.con_requires_hsup`, `GPatTy.pair_requires_hsup`,
+    `GPatTy.con_nullary`.
+  * **Examples** (`Examples.lean`, over `LNL` with equation (1)): `push`'s pattern `[(x, y)]`
+    is rejected at `[Many]` and the whole program is ill-typed
+    (`granule_push_many_ill_typed_dt`, `granule_push_many_ill_typed_dt'`), accepted at `[1]`
+    (`granule_push_one_typed_dt`); `[Just x]` rejected at `Many` but `[Nothing]` accepted;
+    `Nil` does not match `Vec 1 a`; `[Cons x Nil]` accepted at `[1]`, rejected at `[Many]`;
+    `unwrap_typed` and `maybeId_typed` (constructors and `case`); grade-polymorphic `push`:
+    constraint satisfiable but not valid (`pushPat_poly_satisfiable`,
+    `pushPat_poly_not_valid`).
 * Section 6: `both_push_and_bang`.
 
 ## What is still missing (not formalized)
@@ -114,9 +142,14 @@ after Section 4 for the proofs.
    in the models; coherence (that different derivations of the same judgement have the same
    denotation; this would need the full set of coherence laws of item 2); completeness. The
    paper does not claim any of these.
-4. **Section 5, the Granule specifics.** User-defined ADTs/GADTs, `hsup` applied to arbitrary
-   constructors, and discharging the constraints with an SMT solver are not modelled. Only the
-   `r ⊔ r` restriction for `LNL` and the `push` example are formalized.
+4. **Section 5, scope of the data-type model.** Data types are modelled with ℕ-valued GADT
+   indices and monomorphised type parameters (each instance of `Maybe a` is its own data-type
+   name); there is no type-level polymorphism or index unification, and impossible `case`
+   branches are simply untypable. Exhaustiveness of `case` is not checked. Constraint
+   generation is formalized for patterns only (term typing stays declarative), and the SMT
+   solver is replaced by a decision procedure that enumerates valuations, so it only applies to
+   finite grade types. The reading of "`r ⋉ r` defined at `r`" is: `r ⋉ r` is defined; for
+   Section 2's `⋉` and equation (1), whenever it is defined it equals `r`.
 5. **Theorem 1, the exact shape of the translations.** GrCore → IMELL is proved in the form the
    paper states it (`∃ M`). The type-directed term translation itself is not given as a
    function. IMELL → GrCore uses an explicit term translation (`trTerm`).
