@@ -541,7 +541,7 @@ la linear logic’s $!$. We then define $r times.l s$ for this semiring as:
 #math.equation(numbering: "(1)")[
   $
     r times.l s = cases(
-      & quad r = 1 and s = 1,
+      1 & quad r = 1 and s = 1,
       bot & quad "otherwise",
     )
   $
@@ -564,8 +564,11 @@ possible, since we follow Benton et al.’s full term assignment for IMELL
 - (#strong[GRCORE into IMELL]) $quad Gamma tack t : A quad arrow.r.double quad exists M . ⟦ Gamma ⟧ tack_("IMELL") M : ⟦ A ⟧$
 - (#strong[IMELL into GRCORE]) $quad Gamma tack_("IMELL") M : T quad arrow.r.double quad ⟦ Gamma ⟧ tack ⟦ M ⟧ : ⟦ T ⟧$
 
-The translation from GRCORE to IMELL maps both $square_0 A$ and $square_omega A$ to $!⟦A⟧$ and $square_1 A$ to just $⟦A⟧$, and similarly
-for graded assumptions (e.g., $x : [A]_omega$ to $x : !⟦A⟧$).
+The translation from GRCORE to IMELL maps $square_omega A$ to $!⟦A⟧$, $square_1 A$ to just $⟦A⟧$, and $square_0 A$ to the unit type $1$, and similarly
+for graded assumptions (e.g., $x : [A]_omega$ to $x : !⟦A⟧$ and $x : [A]_0$ to $x : 1$).
+Note that $square_0 A$ must #emph[not] be mapped to $!⟦A⟧$: the term
+$lambda z . "let" [y] = z "in" (y, [y])$ has type $square_1 alpha ⊸ alpha ⊗ square_0 alpha$ in the adjusted
+GRCORE (since $1 + 0 = 1$), but $alpha ⊸ alpha ⊗ !alpha$ is not provable in IMELL for an atomic type $alpha$.
 
 The operation $times.l$ is inspired by the coeffect calculus of Petricek et
 al.~\[POM14\] whose graded type system includes $times.l$ as an operation to
