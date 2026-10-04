@@ -1,3 +1,27 @@
+# Summary of changes for run 8ffe1f8e-6369-4d00-889f-6f72bccc12a8
+I took "implement" to mean: prove in Lean the two claims behind the "Atomic types" note, which until now were only stated in comments. First, the atoms added to both calculi act exactly like the paper's metavariables `A`, `B`. Second, without atoms every type has a closed term, so the paper's "cannot be derived" results only make sense when `A`, `B` are read as type variables. Both are now proved. The project builds with no errors and no `sorry`, and the new theorems use only the standard axioms.
+
+**New folder `RequestProject/Sec4_Solution/Atoms/`**
+
+`Substitution.lean`: atoms behave as type variables
+- `Ty.substAtoms` and `ITy.substAtoms` replace each atom with a given type.
+- `Typed.substAtoms`: substituting types for atoms keeps a GrCore term typed, with the same term. This holds for every pair rule `⋉`, so for both Section 2's calculus and the adjusted calculus. `IHasType.substAtoms` is the same result for IMELL.
+- Consequence (`typed_atoms_iff_schematic`, `ihasType_atoms_iff_schematic`): a closed term has a type containing atoms exactly when it has every instance of that type.
+
+`AtomFree.lean`: without atoms everything is inhabited
+- `Ty.AtomFree` and `ITy.AtomFree` describe the paper's own types, which have no atoms.
+- `atomFree_inhabited`: every atom-free type has a closed term \(t : A\) and a closed term \(A ⊸ 1\). This holds for GrCore and the adjusted calculus, for every `⋉`, over any semiring where each grade \(r\) satisfies \(0 ⊑ r\) or \(1 ⊑ r\); this includes \(\{0,1,\omega\}\). `adj_atomFree_inhabited` and `grcore_atomFree_inhabited` are the \(\{0,1,\omega\}\) instances.
+- `iatomFree_inhabited` and `ideriv_atomFree`: in IMELL, every sequent built from atom-free formulas is provable.
+- The paper's negative results only hold as statements about schemas. In each case below, no single term works for all `A`, `B`, but every atom-free instance can be derived:
+  - `imell_push_schema` for \(!(A⊗B) ⊸ !A ⊗ !B\);
+  - `adj_push_many_schema` for \(\square_\omega(A⊗B) ⊸ \square_\omega A ⊗ \square_\omega B\) in the adjusted calculus;
+  - `imell_dup_bang_schema` for \(A ⊸ A ⊗ !A\).
+- `theorem1_as_stated_atomFree`: with the paper's original translation (\(\square_0 A \mapsto !⟦A⟧\)), every atom-free judgement translates to a derivable IMELL sequent. So the earlier refutation of Theorem 1 as stated depends on having atoms.
+
+**Limitation:** the GrCore inhabitation result does not cover semirings with a grade above neither \(0\) nor \(1\), for example exact-usage \(\mathbb N\) at grade \(2\).
+
+I also updated the Section 4 index (`RequestProject/Sec4_Solution.lean`, new item 10), the comment in `RequestProject/Sec2_CoreCalculus/Syntax.lean`, and item 6 of `FORMALIZATION_STATUS.md`. The Properties table has eight new proved properties and two new definitions (`Ty.AtomFree`, `Ty.substAtoms`).
+
 # Summary of changes for run df905e8a-6a5c-4957-83eb-624927ef1bdd
 The GrCore → IMELL translation of Theorem 1 is now a function, `trDeriv`, and its correctness is proved. The full project builds with no errors, warnings or `sorry`, and the new theorems use only the standard axioms (`propext`, `Classical.choice`, `Quot.sound`).
 

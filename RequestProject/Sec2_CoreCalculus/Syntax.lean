@@ -18,7 +18,10 @@ units, pattern matching and a semiring-graded necessity modality `□_r A`).
 The paper's calculus is monomorphic and has no base types.  We add *atomic* types
 `Ty.atom i` (type variables, as in Granule): without them every type of the calculus (and
 every IMELL formula built from the unit) is inhabited, which would make the expressivity
-statements of Section 4 trivial.
+statements of Section 4 trivial.  Both facts are proved in
+`RequestProject/Sec4_Solution/Atoms/`: atoms behave exactly as the paper's type metavariables
+(`Typed.substAtoms`, `typed_atoms_iff_schematic`), and without them every type is inhabited
+(`atomFree_inhabited`, `ideriv_atomFree`).
 -/
 
 @[expose] public section

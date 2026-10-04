@@ -28,6 +28,8 @@ public import RequestProject.Sec4_Solution.Semantics.CatModel
 public import RequestProject.Sec4_Solution.Semantics.Interp
 public import RequestProject.Sec4_Solution.Semantics.CountingModel
 public import RequestProject.Sec4_Solution.Semantics.ErasureModel
+public import RequestProject.Sec4_Solution.Atoms.Substitution
+public import RequestProject.Sec4_Solution.Atoms.AtomFree
 
 /-!
 # Section 4: Solution
@@ -68,4 +70,13 @@ Reading order:
    an instance (`grModel_sound_from_catModel`, `adj_push_many_not_derivable_sem`);
    `ErasureModel` is the set-theoretic model with `D_r A = A`, valid for every `⋉`
    (`no_closed_term_of_atom`).
+10. `Sec4_Solution/Atoms/` — the role of the atomic types added to both calculi (not in the
+   paper). `Substitution`: atoms are type variables — substituting types for atoms preserves
+   typing in GrCore (every `⋉`) and IMELL (`Typed.substAtoms`, `IHasType.substAtoms`), so a
+   closed term has a type with atoms iff it has all its instances
+   (`typed_atoms_iff_schematic`, `ihasType_atoms_iff_schematic`). `AtomFree`: without atoms
+   every type is inhabited (`atomFree_inhabited`, `iatomFree_inhabited`, `ideriv_atomFree`),
+   so the paper's underivability results are statements about schemas
+   (`adj_push_many_schema`, `imell_push_schema`, `imell_dup_bang_schema`), and Theorem 1 with
+   the paper's translation holds on atom-free judgements (`theorem1_as_stated_atomFree`).
 -/

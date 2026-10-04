@@ -153,8 +153,20 @@ after Section 4 for the proofs.
 5. **Theorem 1, the exact shape of the translations.** GrCore → IMELL is proved in the form the
    paper states it (`∃ M`). The type-directed term translation itself is not given as a
    function. IMELL → GrCore uses an explicit term translation (`trTerm`).
-6. **Design assumption.** Both calculi have atomic types added. Without atoms every type is
-   inhabited and the underivability statements would be trivial.
+6. **Design assumption, now justified formally** (`Sec4_Solution/Atoms/`). Both calculi have
+   atomic types added. They act exactly as the paper's type metavariables: substituting types
+   for atoms preserves typing in GrCore (for every `⋉`) and in IMELL (`Typed.substAtoms`,
+   `IHasType.substAtoms`), so a closed term has a type with atoms iff it has every instance
+   (`typed_atoms_iff_schematic`, `ihasType_atoms_iff_schematic`). Without atoms every type is
+   inhabited — GrCore/adjusted calculus over any semiring where each grade is `⊒ 0` or `⊒ 1`
+   (`atomFree_inhabited`, in particular `{0, 1, ω}`), and every IMELL sequent
+   (`ideriv_atomFree`). So `⊬ push_!`, `⊬ □_ω(A ⊗ B) ⊸ □_ω A ⊗ □_ω B` and `⊬ A ⊸ A ⊗ !A` are
+   statements about schemas: no single term works for all `A`, `B`, yet each atom-free
+   instance is derivable (`imell_push_schema`, `adj_push_many_schema`,
+   `imell_dup_bang_schema`). Likewise Theorem 1 with the paper's original translation holds on
+   all atom-free judgements (`theorem1_as_stated_atomFree`); its refutation needs atoms.
+   Not covered: the GrCore case for semirings with grades above neither `0` nor `1` (e.g.
+   exact usage `ℕ` with grade `2`).
 
 ## Review of the Typst source (`Linear Exponentials as Graded Modal Types.typ`)
 
